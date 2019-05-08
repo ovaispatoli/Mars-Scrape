@@ -31,15 +31,42 @@ def scrape ():
     soup = bs(html, "html.parser")
 
     #-Scrape latest mars data from NASA
-    new_title = soup.find("div", class_="content_title").text
+    news_title = soup.find("div", class_="content_title").text
     news_p = soup.find("div", class_= "article_teaser_body").text
+
+    mars_data["Latest News Title"] = news_title
+    mars_data ["Latest News Paragraph"] = news_p
 
     #-JPL Mars Featured Image
     nasa_img = "https://www.jpl.nasa.gov/spaceimages/?search=&category=Mars"
+    browser.visit(nasa_img)
+    time.sleep(2)
+    img_html = browser.html
+    soup = bs(img_html, "html.parser")
 
     img_base_url = "{0.scheme}://{0.netloc}/".format(urlsplit(nasa_img))
+    img_url = soup.find("div", class_="carousel_items").find("article")["style"]
+    img_url = img_url[23:(len(img_url)-3)]
 
-    browser.visit(nasa_img)
+    feat_img_url = img_base_url + img_url
+
+    mars_data["Featured Image"] = feat_img_url
+
+    #-Mars Weather
+    tweet_url = "https://twitter.com/marswxreport?lang=en"
+    browser.visit(tweet_url)
+
+    html_tweet = browser.html
+    soup = bs(html_tweet, "html.parser")
+
+    mars_weather = soup.find("p", class_="TweetTextSize TweetTextSize--normal js-tweet-text tweet-text").text
+    mars_weather = mars_weather.replace("\n", " ")
+    mars_weather = mars_weather[0:-26]
+
+    mars_data["Mars Weather"] = mars_weather
+    
+
+
 
 
 
