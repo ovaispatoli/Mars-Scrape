@@ -112,7 +112,7 @@ def scrape ():
         #Get full image source
         img_src = (hem_base_url + soup.find("img", class_= "wide-image")["src"])
         #Append to empty list: hem_img_urls
-        hem_img_urls.append({"Image Title": img_title}, "Image URL": img_src})
+        hem_img_urls.append({"Image Title": img_title, "Image URL": img_src})
         #Wait a second or two
         time.sleep(2)
 
