@@ -65,8 +65,61 @@ def scrape ():
 
     mars_data["Mars Weather"] = mars_weather
     
+    #-Mars Facts
 
+    facts_url = "https://space-facts.com/mars/"
+    time.sleep(3)
+    facts_table = pd.read_html(facts_url)
+    
+    facts_df = pd.DataFrame(facts_table[0])
+    facts_df.columns = ["Measurements", "Values"]
+    facts_df = facts_df.reset_index(["Measurements"])
 
+    facts_html = facts_df.to_html()
+    facts_html = facts_html.replace("\n", "")
+    
+    mars_data["Mars Facts Table"] = facts_html
 
+    #-Mars Hemipsheres
+    
+    hem_url = "https://astrogeology.usgs.gov/search/results?q=hemisphere+enhanced&k1=target&v1=Mars"
+    browser.visit(hem_url)
+
+    #Base URL
+    hem_base_url = "{0.scheme}://{0.netloc}/".format(urlsplit(hem_url))
+
+    #soup object
+    hem_html = browser.html
+    soup = bs(hem_html, "html.parser")
+
+    #find all divs containing class 'item'
+    div_data = soup.find_all("div", class_="item")
+
+    #Create empty list to append to
+    hem_img_urls = []
+
+    #Loop and find image urls
+    for item in div_data:
+        #Find and store title
+        img_title = item.find("h3").text
+        #Find and store link to image
+        img_url = item.find("a", class_= "itemLink product-item")["href"]
+        #Visit image web page
+        browser.visit(hem_base_url + img_url)
+        #Convert web page into html format and then soup object
+        img_html = browser.html
+        soup = bs(img_html, "html.parser")
+        #Get full image source
+        img_src = (hem_base_url + soup.find("img", class_= "wide-image")["src"])
+        #Append to empty list: hem_img_urls
+        hem_img_urls.append({"Image Title": img_title}, "Image URL": img_src})
+        #Wait a second or two
+        time.sleep(2)
+
+    #-Add hem_img_urls to mars_data
+    mars_data["Hemisphere Image URL's"] = hem_img_urls
+
+    #-Return Mars DAta
+    return mars_data
 
 
