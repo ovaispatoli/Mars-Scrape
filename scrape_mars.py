@@ -12,14 +12,14 @@ import pymongo
 
 #--browser function
 
-def browser():
+def init_browser():
     driver_path = {"executable_path": "chromedriver.exe"}
     return Browser("chrome", **driver_path, headless=False)
 
 #--scrape function
 
-def scrape ():
-    browser = browser()
+def scrape_info():
+    browser = init_browser()
     mars_data = {}
 
     #-Nasa Website
@@ -118,6 +118,9 @@ def scrape ():
 
     #-Add hem_img_urls to mars_data
     mars_data["Hemisphere Image URL's"] = hem_img_urls
+
+    #close the browser
+    browser.quit()
 
     #-Return Mars DAta
     return mars_data
